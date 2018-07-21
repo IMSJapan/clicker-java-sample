@@ -24,6 +24,9 @@ out
 build
 bin
 
+# H2
+./data/
+
 # Other
 *.log
 *.swp

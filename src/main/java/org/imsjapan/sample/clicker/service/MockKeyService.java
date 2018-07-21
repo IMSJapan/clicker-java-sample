@@ -1,4 +1,4 @@
-package org.imsjapan.sample.clicker;
+package org.imsjapan.sample.clicker.service;
 
 import org.imsglobal.aspect.LtiKeySecretService;
 import org.springframework.stereotype.Service;
