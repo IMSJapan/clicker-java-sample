@@ -19,12 +19,13 @@
                     <input class="form-check-input" type="radio" name="clickerOption.id"
                            th:id="@{'clickerOption' + ${clickerOption.id}}"
                            th:value="${clickerOption.id}"
+                           th:disabled="${isInstructor}"
                            th:checked="${answer != null && answer.clickerOption.id == clickerOption.id}">
                     <label class="form-check-label" th:for="@{'clickerOption' + ${clickerOption.id}}"
                            th:text="${clickerOption.title}"></label>
                 </div>
             </div>
-            <button class="btn btn-primary" type="submit">回答</button>
+            <button class="btn btn-primary" type="submit" th:disabled="${isInstructor}">回答</button>
         </form>
     </div>
 
