@@ -6,10 +6,12 @@
         <sourceOutputDir name="target/generated-sources/annotations" />
         <sourceTestOutputDir name="target/generated-test-sources/test-annotations" />
         <outputRelativeToContentRoot value="true" />
+        <module name="caliper-java" />
         <module name="clicker-java-sample" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="caliper-java" target="1.8" />
       <module name="clicker-java-sample" target="1.8" />
     </bytecodeTargetLevel>
   </component>
