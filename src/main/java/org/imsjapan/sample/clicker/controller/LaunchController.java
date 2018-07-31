@@ -24,14 +24,16 @@ public class LaunchController {
     @Autowired
     HttpSession session;
 
+    // POST /launch
     @Lti
     @RequestMapping(value = "/launch", method = RequestMethod.POST)
     public String launch(final HttpServletRequest request, final LtiVerificationResult result, final Model model) {
         // Set session value
-        LtiLaunch launch = result.getLtiLaunchResult();
+        final LtiLaunch launch = result.getLtiLaunchResult();
         session.setAttribute("ltiLaunch", launch);
 
-        DateTime now = new DateTime();
+        // Get current DateTime
+        final DateTime now = new DateTime();
         if (CaliperSession.sendSessionLoggedIn(launch.getUser().getId(), now)) {
             // イベント送信成功
             logger.info("SessionEvent(Logged In) was sent successfully.");

@@ -27,6 +27,7 @@ public class ClickerController {
     @Autowired
     AnswerService answerService;
 
+    // GET /clicker
     @GetMapping
     public String index(final Model model) {
         // Get launch params
@@ -55,16 +56,19 @@ public class ClickerController {
         return "clicker/index";
     }
 
+    // GET /clicker/new
     @GetMapping(value = "new")
     public String newClickerItem(final Model model) {
         return "clicker/new";
     }
 
+    // POST /clicker/create
     @PostMapping
     public String create(@ModelAttribute final ClickerItem clickerItem) {
         // Get launch params
         final LtiLaunch ltiLaunch = (LtiLaunch) session.getAttribute("ltiLaunch");
 
+        // Persist a clicker item
         clickerItem.setResourceLinkId(ltiLaunch.getResourceLinkId());
         clickerItem.setStatus(ClickerItem.Status.NEW);
         clickerItemService.save(clickerItem);
@@ -72,37 +76,46 @@ public class ClickerController {
         return "redirect:/clicker";
     }
 
+    // GET /clicker/{clickerItemId}
     @GetMapping(value = "{clickerItemId}")
     public String show(@PathVariable("clickerItemId") final Long clickerItemId, final Model model) {
+        // Get a clicker item
         final Optional<ClickerItem> clickerItemOptional = clickerItemService.findById(clickerItemId);
         clickerItemOptional.ifPresent(clickerItem -> model.addAttribute("clickerItem", clickerItem));
 
         return "clicker/show";
     }
 
+    // POST /clicker/{clickerItemId}/answer
     @PostMapping(value = "{clickerItemId}/answer")
     public String answer(@PathVariable("clickerItemId") final Long clickerItemId, @ModelAttribute final Answer answer) {
         // Get launch params
         final LtiLaunch ltiLaunch = (LtiLaunch) session.getAttribute("ltiLaunch");
         answer.setUserId(ltiLaunch.getUser().getId());
 
+        // Get a clicker item
         final Optional<ClickerItem> clickerItem = clickerItemService.findById(clickerItemId);
         answer.setClickerItem(clickerItem.orElse(null));
 
+        // Persist an answer
         answerService.save(answer);
 
         return "redirect:/clicker";
     }
 
+    // POST /clicker/{clickerItemId}/start
     @PostMapping(value = "{clickerItemId}/start")
     public String start(@PathVariable("clickerItemId") final Long clickerItemId){
+        // Set status ONGOING (enabled)
         clickerItemService.updateStatus(clickerItemId, ClickerItem.Status.ONGOING);
 
         return "redirect:/clicker";
     }
 
+    // POST /clicker/{clickerItemId}/stop
     @PostMapping(value = "{clickerItemId}/stop")
     public String stop(@PathVariable("clickerItemId") final Long clickerItemId){
+        // Set status COMPLETED (disabled)
         clickerItemService.updateStatus(clickerItemId, ClickerItem.Status.COMPLETED);
 
         return "redirect:/clicker";

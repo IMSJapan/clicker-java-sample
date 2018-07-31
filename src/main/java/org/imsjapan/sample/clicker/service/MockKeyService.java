@@ -8,7 +8,7 @@ public class MockKeyService implements LtiKeySecretService {
 
     @Override
     public String getSecretForKey(final String key) {
-        return "secret";
+        return "secret";    // FIXME
     }
 
 }
