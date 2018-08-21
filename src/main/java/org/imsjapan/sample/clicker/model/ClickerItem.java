@@ -93,9 +93,9 @@ public class ClickerItem implements Serializable {
     }
 
     public enum Status {
-        NEW,
-        ONGOING,
-        COMPLETED;
+        NEW,        // 新規
+        ONGOING,    // 実施中
+        COMPLETED;  // 完了
     }
 
 }

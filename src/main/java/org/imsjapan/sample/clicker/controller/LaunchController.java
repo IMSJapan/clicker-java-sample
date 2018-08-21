@@ -25,13 +25,16 @@ public class LaunchController {
     HttpSession session;
 
     // POST /launch
+    // LTI で LMS から起動する際のエンドポイント
     @Lti
     @RequestMapping(value = "/launch", method = RequestMethod.POST)
     public String launch(final HttpServletRequest request, final LtiVerificationResult result, final Model model) {
         // Set session value
-        final LtiLaunch launch = result.getLtiLaunchResult();
-        session.setAttribute("ltiLaunch", launch);
+        // LMS から遷移したときしかパラメータは取得できないためセッションに格納して利用
+        final LtiLaunch launch = result.getLtiLaunchResult();   // LTI におけるパラメータを LtiLaunch オブジェクトとして取得
+        session.setAttribute("ltiLaunch", launch);  // そのままセッションに格納
 
+        // Logging with Caliper
         // Get current DateTime
         final DateTime now = new DateTime();
         if (CaliperSession.sendSessionLoggedIn(launch.getUser().getId(), now)) {
@@ -42,7 +45,7 @@ public class LaunchController {
             logger.error("Failed to send SessionEvent(Logged In).");
         }
 
-        return "redirect:/clicker";
+        return "redirect:/clicker"; // クリッカーのメイン画面にリダイレクトします
     }
 
 }
