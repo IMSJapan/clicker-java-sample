@@ -2,19 +2,19 @@
 
 1. 任意の場所にリポジトリをクローンします
 
+    ~~~
     $ cd path/to/imsjapan
-    
     $ git clone https://github.com/IMSJapan/clicker-java-sample.git
-    
     $ cd ../imsglobal
-    
     $ git clone https://github.com/IMSGlobal/caliper-java.git
+    ~~~
 
 1. caliper-java について、利用するバージョンのタグをチェックアウトします
 
+    ~~~
     $ cd path/to/caliper-java
-    
     $ git checkout 1.0.0
+    ~~~
 
 ## IntelliJ IDEA を用いた環境構築
 
@@ -61,3 +61,42 @@
     * Project: clicker
     * Main type: org.imsjapan.sample.clicker.Application
     * 設定できたら、画面下部の [Apply] をクリックし、[Run] で実行します
+
+## Canvas での LTI 設定
+
+1. 講師権限でコースを開きます
+1. コース内メニュー [設定] - [アプリ] - [アプリ設定の表示] とクリックします
+1. "外部アプリ" の一覧において、 [+アプリ] をクリックします
+1. "アプリの追加" ダイアログで LTI アプリの追加設定をおこないます
+    * 設定のタイプ: XML を貼り付け
+    * 名前: アプリ名
+    * コンシューマ鍵: key
+    * 共有シークレット: secret
+    * XML設定: https://canvas.instructure.com/doc/api/file.tools_xml.html を参考に XML を作成し貼り付けます
+        * <blti:launch_url>: ローンチURL
+        * <blti:title>: コース内メニューに表示されるアプリ名
+        * <blti:description>: アプリの説明
+    例）コース内メニューに表示する場合
+    ~~~
+    <?xml version="1.0" encoding="UTF-8"?>
+    <cartridge_basiclti_link xmlns="http://www.imsglobal.org/xsd/imslticc_v1p0"
+        xmlns:blti = "http://www.imsglobal.org/xsd/imsbasiclti_v1p0"
+        xmlns:lticm ="http://www.imsglobal.org/xsd/imslticm_v1p0"
+        xmlns:lticp ="http://www.imsglobal.org/xsd/imslticp_v1p0"
+        xmlns:xsi = "http://www.w3.org/2001/XMLSchema-instance"
+        xsi:schemaLocation = "http://www.imsglobal.org/xsd/imslticc_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticc_v1p0.xsd
+        http://www.imsglobal.org/xsd/imsbasiclti_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imsbasiclti_v1p0.xsd
+        http://www.imsglobal.org/xsd/imslticm_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticm_v1p0.xsd
+        http://www.imsglobal.org/xsd/imslticp_v1p0 http://www.imsglobal.org/xsd/lti/ltiv1p0/imslticp_v1p0.xsd">
+        <blti:launch_url>http://localhost:8080/launch</blti:launch_url>
+        <blti:title>Clicker</blti:title>
+        <blti:description>Provides a clicker tool</blti:description>
+        <blti:extensions platform="canvas.instructure.com">
+          <lticm:property name="privacy_level">public</lticm:property>
+          <lticm:options name="course_navigation">
+            <lticm:property name="enabled">true</lticm:property>
+          </lticm:options>
+        </blti:extensions>
+    </cartridge_basiclti_link>
+    ~~~
+    * 設定できたら [提出] をクリックします
