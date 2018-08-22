@@ -37,7 +37,7 @@ public class LaunchController {
         // Logging with Caliper
         // Get current DateTime
         final DateTime now = new DateTime();
-        if (CaliperSession.sendSessionLoggedIn(launch.getUser().getId(), now)) {
+        if (CaliperSession.sendSessionLoggedIn(launch.getUser(), session.getId(), now)) {
             // イベント送信成功
             logger.info("SessionEvent(Logged In) was sent successfully.");
         } else {

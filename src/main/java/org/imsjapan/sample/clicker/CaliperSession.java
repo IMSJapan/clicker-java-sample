@@ -11,25 +11,24 @@ import org.imsglobal.caliper.entities.agent.SoftwareApplication;
 import org.imsglobal.caliper.entities.media.MediaLocation;
 import org.imsglobal.caliper.entities.session.Session;
 import org.imsglobal.caliper.events.SessionEvent;
+import org.imsglobal.lti.launch.LtiUser;
 import org.joda.time.DateTime;
-import org.joda.time.Seconds;
-import org.joda.time.format.ISOPeriodFormat;
 
 public class CaliperSession {
 
     private static final Logger logger = LogManager.getLogger(CaliperSession.class);
 
-    private static String ENDPOINT = "http://localhost:9966/key/caliper"; // 送信先URL
+    private static final String ENDPOINT = "http://localhost:9966/key/caliper"; // 送信先URL
 
-    private static String API_KEY = "apikey";  // APIキー
+    private static final String API_KEY = "apikey";  // APIキー
 
-    private static String SENSOR_ID = "sensorId";
+    private static final String SENSOR_ID = "sensorId";
 
-    private static String CLIENT_ID = "clientId";
+    private static final String CLIENT_ID = "clientId";
 
-    private static String APP_ID = "https://example.com/app/123456789";
+    private static final String APP_ID = "http://localhost:8080";
 
-    private static String APP_NAME = "Clicker Java";
+    private static final String APP_NAME = "Clicker Java";
 
     private static Sensor<String> sensor;
 
@@ -39,7 +38,7 @@ public class CaliperSession {
         options.setHost(ENDPOINT);
         options.setApiKey(API_KEY);
         sensor.registerClient(CLIENT_ID, new Client(CLIENT_ID, options));
-    };
+    }
 
     private static SoftwareApplication app;
 
@@ -48,7 +47,7 @@ public class CaliperSession {
                 .id(APP_ID)
                 .name(APP_NAME)
                 .build();
-    };
+    }
 
     /**
      * ログインのSessionEventを送信する。
@@ -56,29 +55,36 @@ public class CaliperSession {
      *
      * @return boolean
      */
-    public static boolean sendSessionLoggedIn(String userName, DateTime loginTime) {
-        DateTime now = DateTime.now();
+    public static boolean sendSessionLoggedIn(LtiUser user, String sessionId, DateTime loginTime) {
+        final DateTime now = DateTime.now();
 
-        Person actor = Person.builder()
-                .id("https://example.com/persons/" + userName)
-                .name(userName)
+        // 操作しているユーザの情報をセット
+        // id: URL + ユーザID
+        // name: ユーザID
+        final Person actor = Person.builder()
+                .id(APP_ID + "/users/" + user.getId())
+                .name(user.getId())
                 .build();
 
-        Session session = Session.builder()
-                .id("https://example.com/sessions/12345")
+        // セッションの情報をセット
+        // id: URL + セッションID
+        final Session session = Session.builder()
+                .id(APP_ID + "/sessions/" + sessionId)
                 .actor(actor)
                 .dateCreated(loginTime)
                 .dateModified(loginTime)
                 .startedAtTime(loginTime)
                 .build();
 
+        // ページの情報をセット
         // Java版のAPIでは指定が必須
-        MediaLocation location = MediaLocation.builder()
-                .id("https://example.com/page/default")
-                .name("Default Page")
+        final MediaLocation location = MediaLocation.builder()
+                .id(APP_ID + "/launch")
+                .name("Launch Page")
                 .build();
 
-        SessionEvent sessionEvent = SessionEvent.builder()
+        // Caliper に送信するイベントオブジェクトを作成
+        final SessionEvent sessionEvent = SessionEvent.builder()
                 .actor(actor)
                 .action(Action.LOGGED_IN.getValue())
                 .object(app)
@@ -91,43 +97,6 @@ public class CaliperSession {
             sensor.send(sensor, sessionEvent);
             return true;
         } catch (Error e) {
-            logger.error(e.getStackTrace().toString());
-            return false;
-        }
-    }
-
-    /**
-     * ログアウトのSessionEventを送信する。
-     * 送信成功時にtrue、失敗時にfalseを返す。
-     *
-     * @return boolean
-     */
-    public static boolean sendSessionLoggedOut(String userName, DateTime loginTime) {
-        DateTime now = DateTime.now();
-        String duration = ISOPeriodFormat.standard().print(Seconds.secondsBetween(loginTime, now));
-
-        // BEGIN: 送信用イベントの構築
-        // この部分でLoggedOutイベントの構築を行う。
-        // ログイン時とは異なり、session に endedAtTime, duration が必要となる
-
-
-
-
-
-
-
-
-
-
-        SessionEvent sessionEvent = null;
-
-
-        // END: 送信用イベントの構築
-
-        try {
-            sensor.send(sensor, sessionEvent);
-            return true;
-        } catch (Throwable e) {
             logger.error(e.getStackTrace().toString());
             return false;
         }
